@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="DollerCalculatorTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2021-07-24T05:23:32" hostname="LAPTOP-ER22MFG5" time="0.539">
+  <properties/>
+  <testcase name="dollarTest()" classname="DollerCalculatorTest" time="0.525"/>
+  <testcase name="testHello()" classname="DollerCalculatorTest" time="0.004"/>
+  <testcase name="mockTest()" classname="DollerCalculatorTest" time="0.007"/>
+  <system-out><![CDATA[22000
+0
+hello
+60000
+0
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
