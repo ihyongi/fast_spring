@@ -1,5 +1,7 @@
 package jpql;
 
+import org.h2.value.ValueStringIgnoreCase;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -20,25 +22,21 @@ public class JpaMain {
             em.persist(team);
 
             Member member = new Member();
-            member.setUsername("member1");
+            member.setUsername("teamA");
             member.setAge(10);
             member.setTeam(team); //연관관계 메서드 필요
+            member.setType(MemberType.ADMIN);
             em.persist(member);
 
             em.flush();
             em.clear();
 
-            //조인쿼리짜보자--이렇게하면 쿼리가 두개나온다.. fetch=LAZY설정!!!
-            List<Member> result = em.createQuery("select m from Member m inner join m.team t")
-                    .setFirstResult(0) //0번째부터
-                    .setMaxResults(10) //10개 가져온다
+            String query = "select index(t.members) from Team t"; //컬렉션의 크기를 돌려줌
+            List<Integer> result = em.createQuery(query, Integer.class)
                     .getResultList();
-
-            System.out.println("result.size() = " + result.size());
-            for (Member member1 : result) {
-                System.out.println("member1 = " + member1);
+            for (Integer s : result) {
+                System.out.println("s = " + s);
             }
-
 
             tx.commit(); //뜨악 이게없어서 쿼리문이 안나가고 있던거!!!!!!!!!**
     }catch(Exception e){
