@@ -14,26 +14,33 @@ public class JpaMain {
         EntityTransaction tx = em.getTransaction();
         tx.begin(); //트랜잭션 시작
 
-    try {
-        Member member = new Member();
-        member.setUsername("member1");
-        member.setAge(10);
-        em.persist(member);
+        try {
+            Team team=new Team();
+            team.setName("teamA");
+            em.persist(team);
 
-        em.flush();
-        em.clear();
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setAge(10);
+            member.setTeam(team); //연관관계 메서드 필요
+            em.persist(member);
 
-        List<Member> result = em.createQuery("select m from Member m order by m.age desc", Member.class)
-                .setFirstResult(0) //0번째부터
-                .setMaxResults(10) //10개 가져온다
-                .getResultList();
-        System.out.println("result.size() = " + result.size());
-        for (Member member1 : result) {
-            System.out.println("member1 = " + member1);
-        }
+            em.flush();
+            em.clear();
+
+            //조인쿼리짜보자--이렇게하면 쿼리가 두개나온다.. fetch=LAZY설정!!!
+            List<Member> result = em.createQuery("select m from Member m inner join m.team t")
+                    .setFirstResult(0) //0번째부터
+                    .setMaxResults(10) //10개 가져온다
+                    .getResultList();
+
+            System.out.println("result.size() = " + result.size());
+            for (Member member1 : result) {
+                System.out.println("member1 = " + member1);
+            }
 
 
-        tx.commit(); //뜨악 이게없어서 쿼리문이 안나가고 있던거!!!!!!!!!**
+            tx.commit(); //뜨악 이게없어서 쿼리문이 안나가고 있던거!!!!!!!!!**
     }catch(Exception e){
         tx.rollback();
         e.printStackTrace();

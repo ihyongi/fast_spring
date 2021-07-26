@@ -9,11 +9,15 @@ public class Member {
     private String username;
     private int age;
 
-    //연관관계 설정
-    @ManyToOne()
+    //연관관계 설정--ToOne에는 페치 LAZY로
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
     private Team team;
 
+    public void changeTeam(Team team){
+        this.team=team;
+        team.getMembers().add(this); //this에 넣어준다..
+    }
 
     public Long getId() {
         return id;
@@ -37,6 +41,14 @@ public class Member {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     @Override
