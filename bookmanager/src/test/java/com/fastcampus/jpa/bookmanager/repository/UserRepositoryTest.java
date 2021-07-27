@@ -1,6 +1,8 @@
 package com.fastcampus.jpa.bookmanager.repository;
 
+import com.fastcampus.jpa.bookmanager.domain.Gender;
 import com.fastcampus.jpa.bookmanager.domain.User;
+import com.fastcampus.jpa.bookmanager.domain.UserHistory;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserHistoryRepository userHistoryRepository;
 
     @Test
     @Transactional //getOne은 lazy를 지원하고잇다
@@ -55,7 +59,7 @@ class UserRepositoryTest {
 
         //조회쿼리들 간단하게 만들기 .. queryMethod
         @Test
-        void select(){
+        void select() {
 //            System.out.println("userRepository.findByName(\"\") = " + userRepository.findByName("pinggu"));
 //            System.out.println("userRepository.findByEmail(\"025031210@naver.com\") = " + userRepository.findByEmail("025031210@naver.com"));
 //            System.out.println("userRepository.getByEmail(\"025031210@naver.com\") = " + userRepository.getByEmail("025031210@naver.com"));
@@ -69,8 +73,8 @@ class UserRepositoryTest {
 //            System.out.println("findFirst1ByName : " + userRepository.findFirst1ByName("pinggu"));
 //            System.out.println("findTop1ByName : " + userRepository.findTop1ByName("pinggu"));
 //            System.out.println("findLast1ByName : " + userRepository.findLast1ByName("pinggu"));
-            System.out.println("findUserByEmail : " + userRepository.findByEmailAndName("dubu@naver.com","dubu"));
-            System.out.println("findUserByEmail : " + userRepository.findByEmailOrName("dubu@naver.com","dubu"));
+            System.out.println("findUserByEmail : " + userRepository.findByEmailAndName("dubu@naver.com", "dubu"));
+            System.out.println("findUserByEmail : " + userRepository.findByEmailOrName("dubu@naver.com", "dubu"));
             System.out.println("userRepository.findByCreatedAtAfter(LocalDateTime.now().minusDays(1L)) = " + userRepository.findByCreatedAtAfter(LocalDateTime.now().minusDays(1L)));
             System.out.println("userRepository.findByIdAfter() = " + userRepository.findByIdAfter(4L));
             System.out.println("userRepository.findByCreatedAtGreaterThan() = " + userRepository.findByCreatedAtGreaterThan(LocalDateTime.now().minusDays(1L)));
@@ -80,13 +84,15 @@ class UserRepositoryTest {
             System.out.println("userRepository.findByIdGreaterThanEqualAndIdLessThanEqual() = " + userRepository.findByIdGreaterThanEqualAndIdLessThanEqual(1L, 3L));
 
             System.out.println("userRepository.findByIdIsNotNull() = " + userRepository.findByIdIsNotNull());
-            System.out.println("userRepository.findByAddressIsNotEmpty() = " + userRepository.findByAddressIsNotEmpty()); //[]
-            System.out.println("userRepository.findByNameIn() = " + userRepository.findByNameIn(Lists.newArrayList("pinggu","dubu")));
+            //System.out.println("userRepository.findByAddressIsNotEmpty() = " + userRepository.findByAddressIsNotEmpty()); //[]
+            System.out.println("userRepository.findByNameIn() = " + userRepository.findByNameIn(Lists.newArrayList("pinggu", "dubu")));
             System.out.println("findByNameStartingWith : " + userRepository.findByNameStartingWith("pin"));
             System.out.println("findByNameEndingWith : " + userRepository.findByNameEndingWith("gu"));
             System.out.println("findByNameContains : " + userRepository.findByNameContains("bu"));
-
             System.out.println("findByNameLike : " + userRepository.findByNameLike("%" + "ping" + "%"));
+        }
+            @Test
+            void pagingAndSortingTest(){
             System.out.println("findTop1ByName : " + userRepository.findTop1ByName("angmu"));
             System.out.println("findTopByNameOrderByIdDesc : " + userRepository.findTopByNameOrderByIdDesc("angmu"));
             System.out.println("findFirstByNameOrderByIdDescEmailAsc : " + userRepository.findFirstByNameOrderByIdDescEmailAsc("pinngu"));
@@ -94,9 +100,100 @@ class UserRepositoryTest {
             System.out.println("findFirstByNameWithSortParams : " + userRepository.findFirstByName("pinngu", Sort.by(Sort.Order.desc("id"), Sort.Order.asc("email"))));
             System.out.println("findFirstByNameWithSortParams : " + userRepository.findFirstByName("pinngu", Sort.by(Sort.Order.desc("id"), Sort.Order.asc("email"))));
             System.out.println("findByNameWithPaging : " + userRepository.findByName("dubu", PageRequest.of(1, 1, Sort.by(Sort.Order.desc("id")))).getTotalElements());
+         }
 
-    }
+            @Test
+            void insertAndUpdateTest() {
+                User user = new User();
+                user.setName("bella");
+                user.setEmail("bella@fastcampus.com");
+                userRepository.save(user);
 
+                User user2 = userRepository.findById(1L).orElseThrow(RuntimeException::new);
+                user2.setName("parkjekyll"); //mang
+                userRepository.save(user2);//update
+            }
 
+            @Test
+            void enumTest() {
+                User user = userRepository.findById(1L).orElseThrow(RuntimeException::new);
+                user.setGender(Gender.MALE);
+                userRepository.save(user);
+
+                userRepository.findAll().forEach(System.out::println);
+                System.out.println(userRepository.findRawRecord().get("gender"));
+            }
+
+            @Test
+            void listenerTest() {
+                User user = new User();
+                user.setEmail("martin2@fastcampus.com");
+                user.setName("martin");
+                userRepository.save(user);
+
+                User user2 = userRepository.findById(1L).orElseThrow(RuntimeException::new);
+                user2.setName("marrrrrtin");
+                userRepository.save(user2);
+                userRepository.deleteById(4L);
+            }
+
+            @Test
+            void prePersistTest() {
+                User user = new User();
+                user.setEmail("martin2@fastcampus.com");
+                user.setName("martin");
+                user.setCreatedAt(LocalDateTime.now());
+                user.setUpdatedAt(LocalDateTime.now());
+
+                userRepository.save(user);
+                System.out.println(userRepository.findByEmail("martin2@fastcampus.com"));
+            }
+
+            @Test
+            void preUpdateTest() {
+                User user = userRepository.findById(1L).orElseThrow(RuntimeException::new);
+                System.out.println("as-is : " + user);
+
+                user.setName("martin22");
+                userRepository.save(user);
+                System.out.println("to-be : " + userRepository.findAll().get(0));
+            }
+
+            @Test
+            void userHistoryTest() {
+                User user = new User();
+                user.setEmail("martin-new@fastcampus.com");
+                user.setName("martin-new");
+                userRepository.save(user);
+
+                user.setName("martin-new-new");
+                userRepository.save(user);
+                userHistoryRepository.findAll().forEach(System.out::println); //얘가 null값이뜬다
+            }
+
+            @Test
+            void userRelationTest(){
+                User user = new User();
+                user.setName("ping");
+                user.setEmail("ping@gmail.com");
+                user.setGender(Gender.FEMALE);
+
+                user.setName("bella");
+                userRepository.save(user);
+                user.setEmail("bella@fastcampus.com");
+                userRepository.save(user);
+
+                userHistoryRepository.findAll().forEach(System.out::println);
+
+//                List<UserHistory> result = userHistoryRepository
+//                                .findByUserId(userRepository.findByEmail("bella@fastcampus.com")
+//                                .getId());
+
+                List<UserHistory> result = userRepository.findByEmail("bella@fastcampus.com").getUserHistories();
+                result.forEach(System.out::println);
+
+                System.out.println("UserHistory.getUser() : " + userHistoryRepository.findAll().get(0).getUser());
+
+            }
 
 }

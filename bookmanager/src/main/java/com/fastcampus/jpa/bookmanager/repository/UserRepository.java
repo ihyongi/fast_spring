@@ -40,7 +40,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByIdGreaterThanEqualAndIdLessThanEqual(Long id1, Long id2);
 
     List<User> findByIdIsNotNull();
-    List<User> findByAddressIsNotEmpty(); //"" 를 지칭
+    //List<User> findByAddressIsNotEmpty(); //"" 를 지칭
     List<User> findByNameIn(List<String> names); //"" 를 지칭
     List<User> findByNameStartingWith(String name);
     List<User> findByNameEndingWith(String name);
@@ -53,10 +53,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findFirstByName(String name, Sort sort); //소팅
     Page<User> findByName(String name, Pageable pageable); //페이징
 
+
     @Query(value = "select * from user limit 1;", nativeQuery = true)
     Map<String, Object> findRawRecord();
-
     @Query(value = "select * from user", nativeQuery = true)
     List<Map<String, Object>> findAllRawRecord();
+
 
 }
