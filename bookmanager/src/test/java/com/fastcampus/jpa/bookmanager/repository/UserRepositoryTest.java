@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.endsWith;
 
 @SpringBootTest
+@Transactional
 class UserRepositoryTest {
 
     @Autowired
@@ -140,13 +141,13 @@ class UserRepositoryTest {
             @Test
             void prePersistTest() {
                 User user = new User();
-                user.setEmail("martin2@fastcampus.com");
-                user.setName("martin");
+                user.setEmail("bella@fastcampus.com");
+                user.setName("bella");
                 user.setCreatedAt(LocalDateTime.now());
                 user.setUpdatedAt(LocalDateTime.now());
 
                 userRepository.save(user);
-                System.out.println(userRepository.findByEmail("martin2@fastcampus.com"));
+                System.out.println(userRepository.findByEmail("bella@fastcampus.com"));
             }
 
             @Test

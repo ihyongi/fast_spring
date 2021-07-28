@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -20,6 +22,8 @@ import java.util.List;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
+//@DynamicUpdate
+@Where(clause = "deleted=false")
 public class Book extends BaseEntity implements Auditable {
 
     @Id
@@ -32,7 +36,7 @@ public class Book extends BaseEntity implements Auditable {
 
     private Long authorId;
 
-   // private Long publisherId;
+    // private Long publisherId;
 
     @OneToOne(mappedBy = "book")
     @ToString.Exclude
@@ -43,33 +47,26 @@ public class Book extends BaseEntity implements Auditable {
     @ToString.Exclude //stackoverflow방지
     private List<Review> reviews = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}) //상위객체가 remove->하위의 (영속적인)포함되고 있는 객체까지 remove
     @ToString.Exclude
     private Publisher publisher;
 
-    //@ManyToMany
+    // @ManyToMany
     @OneToMany
-    @JoinColumn(name = "book_id")
+    @JoinColumn(name="book_id")
     @ToString.Exclude
     private List<BookAndAuthor> bookAndAuthors = new ArrayList<>();
 
-//    @ManyToMany
-//    @ToString.Exclude
-//    private List<Author> authors=new ArrayList<>();
+    private boolean deleted; //진짜 삭제하기보다는 컬럼을 하나 넣어서 확인만 하는구나..
 
-//    public void addAuthor(Author author){
-//        this.authors.add(author);
-//    }
-
-    public void addBookAndAuthors(BookAndAuthor... bookAndAuthors) {
+    public void addBookAndAuthor(BookAndAuthor... bookAndAuthors){
         Collections.addAll(this.bookAndAuthors, bookAndAuthors);
     }
 
-    //user
+    //User
 
-    //user/product n:m ....->Order
+    //User/Product
 
-    //product
-
+    //Product
 
 }
