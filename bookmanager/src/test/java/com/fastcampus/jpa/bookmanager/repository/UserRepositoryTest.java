@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.endsWith;
 
@@ -226,12 +228,18 @@ class UserRepositoryTest {
 
         userRepository.save(user2);
 
-        em.clear(); //영속성컨텍스트의 캐시를 한번 밀고..
+//        em.clear(); //영속성컨텍스트의 캐시를 한번 밀고..
 
         userRepository.findAll().forEach(System.out::println);
         userHistoryRepository.findAll().forEach(System.out::println);
 
         userRepository.findAllRawRecord().forEach(a -> System.out.println(a.values())); //찾으면 디비에서 조회
+
+        assertAll(
+                ()->assertThat(userRepository.findById(6L).get().getHomeAddress()).isNotNull(),
+                ()->assertThat(userRepository.findById(7L).get().getHomeAddress()).isInstanceOf(Address.class)
+        );
     }
+
 
 }
