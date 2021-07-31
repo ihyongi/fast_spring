@@ -15,6 +15,7 @@ public class Team {
     private String name;
 
     //양방향연관관계
+    @BatchSize(size=100)
     @OneToMany(mappedBy = "team")
     private List<Member> members =new ArrayList<>(); //권장
 

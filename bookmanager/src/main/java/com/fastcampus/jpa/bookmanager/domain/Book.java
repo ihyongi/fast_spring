@@ -1,6 +1,8 @@
 package com.fastcampus.jpa.bookmanager.domain;
 
+import com.fastcampus.jpa.bookmanager.domain.converter.BookStatusConverter;
 import com.fastcampus.jpa.bookmanager.domain.listener.Auditable;
+import com.fastcampus.jpa.bookmanager.repository.dto.BookStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -59,14 +61,12 @@ public class Book extends BaseEntity implements Auditable {
 
     private boolean deleted; //진짜 삭제하기보다는 컬럼을 하나 넣어서 확인만 하는구나..
 
+    //@Convert(converter = BookStatusConverter.class) //어떤 컨버터를 적용시킬지
+    private BookStatus status; // 판매상태 --오류마크가뜨지만 문제가없다 .. @Converter(autoApply = true)처리해서
+
     public void addBookAndAuthor(BookAndAuthor... bookAndAuthors){
         Collections.addAll(this.bookAndAuthors, bookAndAuthors);
     }
 
-    //User
-
-    //User/Product
-
-    //Product
 
 }

@@ -17,25 +17,37 @@ public class JpaMain {
         tx.begin(); //트랜잭션 시작
 
         try {
-            Team team=new Team();
-            team.setName("teamA");
-            em.persist(team);
+            Team teamA=new Team();
+            teamA.setName("teamA");
+            em.persist(teamA);
 
-            Member member = new Member();
-            member.setUsername("teamA");
-            member.setAge(10);
-            member.setTeam(team); //연관관계 메서드 필요
-            member.setType(MemberType.ADMIN);
-            em.persist(member);
+            Team teamB=new Team();
+            teamB.setName("teamB");
+            em.persist(teamB);
+
+            Member member1 = new Member();
+            member1.setUsername("회원1");
+            member1.setTeam(teamA); //연관관계 메서드 필요
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("회원2");
+            member2.setTeam(teamA); //연관관계 메서드 필요
+            em.persist(member2);
+
+            Member member3 = new Member();
+            member3.setUsername("회원3");
+            member3.setTeam(teamB); //연관관계 메서드 필요
+            em.persist(member3);
 
             em.flush();
             em.clear();
 
-            String query = "select index(t.members) from Team t"; //컬렉션의 크기를 돌려줌
-            List<Integer> result = em.createQuery(query, Integer.class)
+            String query = "select m from Member m join fetch m.team"; //컬렉션의 크기를 돌려줌
+            List<Member> members = em.createQuery(query, Member.class)
                     .getResultList();
-            for (Integer s : result) {
-                System.out.println("s = " + s);
+            for (Member member : members) {
+                System.out.println("member = " + member);
             }
 
             tx.commit(); //뜨악 이게없어서 쿼리문이 안나가고 있던거!!!!!!!!!**
