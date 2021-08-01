@@ -1,0 +1,40 @@
+package com.sp.fc.web.controller;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HomeController {
+
+    @RequestMapping("/")
+    public String index(){
+        return "홈페이지";
+    }
+
+    @RequestMapping("/auth")
+    public Authentication auth(){
+       return SecurityContextHolder.getContext().getAuthentication(); //사용자 auth정보
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')") //이 자격이 먼저 있어야한다
+    @RequestMapping("/user")
+    public SecurityMessage user(){
+        return SecurityMessage
+                .builder()
+                .auth(SecurityContextHolder.getContext().getAuthentication())
+                .message("User 정보")
+                .build();
+    }
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @RequestMapping("/admin")
+    public SecurityMessage admin(){
+        return SecurityMessage
+                .builder()
+                .auth(SecurityContextHolder.getContext().getAuthentication())
+                .message("관리자 정보")
+                .build();
+    }
+}

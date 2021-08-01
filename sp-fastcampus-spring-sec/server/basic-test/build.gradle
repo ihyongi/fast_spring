@@ -1,6 +1,8 @@
 
+
 dependencies {
     implementation("$boot:spring-boot-starter-web")
-    compile project(":comp-common-utils")
+    compileOnly project(":comp-common-utils")
+
 }
 
